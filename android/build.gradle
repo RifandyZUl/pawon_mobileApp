@@ -1,0 +1,56 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.1.1' // Tetap gunakan versi terbaru
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.10" // Update ke versi Kotlin terbaru
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        // Hindari penggunaan Jcenter karena sudah deprecated
+    }
+}
+
+rootProject.buildDir = "../build"
+
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+    
+    afterEvaluate {
+        if (project.hasProperty('android')) {
+            android {
+                compileSdkVersion 34 // Gunakan versi SDK terbaru
+
+                defaultConfig {
+                    minSdkVersion 23 // Disarankan minimal SDK 23 untuk kompatibilitas modern
+                    targetSdkVersion 34 // Sesuaikan dengan SDK terbaru
+                }
+
+                // Menggunakan Java 17 untuk sourceCompatibility dan targetCompatibility
+                compileOptions {
+                    sourceCompatibility JavaVersion.VERSION_17
+                    targetCompatibility JavaVersion.VERSION_17
+                }
+
+                // Tambahkan konfigurasi untuk Kotlin
+                kotlinOptions {
+                    jvmTarget = "17" // Pastikan Kotlin menggunakan JVM 17
+                }
+            }
+        }
+    }
+}
+
+subprojects {
+    project.evaluationDependsOn(":app")
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}

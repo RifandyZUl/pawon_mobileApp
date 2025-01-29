@@ -1,0 +1,45 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+android {
+    namespace = "com.example.latihan"
+    compileSdk = 34 // Update compile SDK to version 34
+    ndkVersion = flutter.ndkVersion
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8" // Update Kotlin JVM target
+    }
+
+    defaultConfig {
+        applicationId = "com.example.latihan"
+        minSdk = 23 // Set minimum SDK version to 23 for better compatibility
+        targetSdk = 34 // Ensure target SDK is version 34
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
+    }
+
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.debug // Temporary signing config
+        }
+    }
+}
+
+flutter {
+    source = "../.."
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1' // Update to a stable version
+    implementation 'androidx.core:core-ktx:1.13.1' // Add required dependency
+    implementation 'androidx.fragment:fragment-ktx:1.7.1' // Ensure fragment compatibility
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.7.0' // Ensure lifecycle compatibility
+}

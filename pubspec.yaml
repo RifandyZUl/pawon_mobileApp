@@ -1,0 +1,37 @@
+name: latihan
+description: "A new Flutter project."
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  shared_preferences: ^2.0.6
+  cupertino_icons: ^1.0.8
+  provider: ^6.0.5
+  flutter_pw_validator: ^1.0.3
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/background_onboarding.png
+    - assets/images/Pawon.png
+    - assets/images/profile.png
+    - assets/images/rendang.png
+    - assets/images/soto.png
+    - assets/images/profile2.png
+    - assets/images/profile3.png
+    - assets/images/seafood.png
+    - assets/images/orek_tempe.png
