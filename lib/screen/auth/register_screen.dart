@@ -4,27 +4,28 @@ import '/widgets/input_field.dart';
 import '/utils/constants.dart';
 import '/utils/validators.dart';
 import 'success_screen.dart';
+import '/services/api_service.dart'; // Pastikan import API service
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _RegisterScreenState createState() => _RegisterScreenState();
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  
+
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
   bool _isPolicyAgreed = false;
   bool _isLoading = false;
 
-  String? _emailError; // Menyimpan pesan error untuk email
-  String? _passwordError; // Menyimpan pesan error untuk password
+  String? _emailError;
+  String? _passwordError;
 
   @override
   Widget build(BuildContext context) {
@@ -40,23 +41,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 Align(
                   alignment: Alignment.topLeft,
                   child: IconButton(
-                    icon: Icon(Icons.arrow_back),
+                    icon: const Icon(Icons.arrow_back),
                     onPressed: () {
                       Navigator.pop(context);
                     },
                   ),
                 ),
-                SizedBox(height: 20),
-                Text(
+                const SizedBox(height: 20),
+                const Text(
                   'Register',
                   textAlign: TextAlign.center,
                   style: kTitleTextStyle,
                 ),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
+                InputField(
+                  hintText: 'Enter your username',
+                  controller: _usernameController,
+                  keyboardType: TextInputType.text,
+                  prefixIcon: Icons.person,
+                ),
+                const SizedBox(height: 16),
                 InputField(
                   hintText: 'Enter your email',
                   controller: _emailController,
@@ -71,31 +79,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   },
                   errorText: _emailError,
                 ),
-                SizedBox(height: 16),
-              InputField(
-                hintText: 'Enter your password',
-                controller: _passwordController,
-                obscureText: !_isPasswordVisible,
-                prefixIcon: Icons.lock,
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                const SizedBox(height: 16),
+                InputField(
+                  hintText: 'Enter your password',
+                  controller: _passwordController,
+                  obscureText: !_isPasswordVisible,
+                  prefixIcon: Icons.lock,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
                   ),
-                  onPressed: () {
+                  onChanged: (value) {
                     setState(() {
-                      _isPasswordVisible = !_isPasswordVisible;
+                      _passwordError = getPasswordError(value);
                     });
                   },
+                  errorText: _passwordError,
                 ),
-                onChanged: (value) {
-                  setState(() {
-                    _passwordError = getPasswordError(value);
-                  });
-                },
-                errorText: _passwordError,
-              ),
-
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 InputField(
                   hintText: 'Confirm your password',
                   controller: _confirmPasswordController,
@@ -112,8 +119,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     },
                   ),
                 ),
-
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -129,7 +135,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       child: RichText(
                         text: TextSpan(
                           text: 'I agree to the ',
-                          style: TextStyle(color: Colors.black),
+                          style: const TextStyle(color: Colors.black),
                           children: [
                             TextSpan(
                               text: 'Privacy policy',
@@ -139,7 +145,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   // Privacy policy action
                                 },
                             ),
-                            TextSpan(
+                            const TextSpan(
                               text: ' and ',
                             ),
                             TextSpan(
@@ -156,20 +162,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _isPolicyAgreed && !_isLoading
                       ? _validateAndRegister
                       : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _isPolicyAgreed
-                        ? kPrimaryColor
-                        : Colors.grey,
-                    minimumSize: Size(double.infinity, 50),
+                    backgroundColor:
+                        _isPolicyAgreed ? kPrimaryColor : Colors.grey,
+                    minimumSize: const Size(double.infinity, 50),
                   ),
                   child: _isLoading
-                      ? CircularProgressIndicator(color: Colors.white)
-                      : Text(
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text(
                           'Register',
                           style: TextStyle(color: Colors.white),
                         ),
@@ -186,14 +191,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (!_validateInputs()) return;
 
     setState(() => _isLoading = true);
-    await Future.delayed(Duration(seconds: 2));
-    setState(() => _isLoading = false);
 
-    Navigator.push(
-      // ignore: use_build_context_synchronously
-      context,
-      MaterialPageRoute(builder: (context) => SuccessScreen()),
-    );
+    try {
+      await registerUser(
+        _usernameController.text.trim(),
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const SuccessScreen()),
+      );
+    } catch (e) {
+      _showError('Registration failed: $e');
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
 
   bool _validateInputs() {

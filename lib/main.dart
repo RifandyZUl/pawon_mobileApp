@@ -6,6 +6,7 @@ import 'screen/choose_steps/choose_language_screen.dart';
 import 'screen/auth/password_reset/password_reset_confirm_screen.dart';
 import 'screen/auth/password_reset/new_password_reset_screen.dart';
 import 'providers/saved_recipes_provider.dart';
+import 'services/api_service.dart';
 
 void main() {
   runApp(
@@ -13,7 +14,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => SavedRecipesProvider()),
       ],
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }
@@ -28,26 +29,40 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.deepPurple,
-          brightness: Brightness.light, // Tema terang
+          brightness: Brightness.light,
         ),
         useMaterial3: true,
       ),
       darkTheme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.deepPurple,
-          brightness: Brightness.dark, // Tema gelap
+          brightness: Brightness.dark,
         ),
         useMaterial3: true,
       ),
-      themeMode: ThemeMode.system, // Ikuti tema sistem perangkat
+      themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
-      routes: {
-        '/': (context) => const OnboardingScreen(),
-        '/login': (context) => LoginScreen(),
-        '/language-selection': (context) => ChooseLanguageScreen(),
-        '/password-reset': (context) => PasswordResetScreen(),
-        '/set-new-password': (context) => const NewPasswordResetScreen(),
+      onGenerateRoute: (settings) {
+        switch (settings.name) {
+          case '/':
+            return MaterialPageRoute(builder: (context) => const OnboardingScreen());
+          case '/login':
+            return MaterialPageRoute(builder: (context) => LoginScreen());
+          case '/language-selection':
+            return MaterialPageRoute(builder: (context) => ChooseLanguageScreen());
+          case '/password-reset':
+            return MaterialPageRoute(builder: (context) => PasswordResetScreen());
+          case '/set-new-password':
+            return MaterialPageRoute(builder: (context) => const NewPasswordResetScreen());
+          default:
+            return MaterialPageRoute(
+              builder: (context) => Scaffold(
+                appBar: AppBar(title: const Text("Page Not Found")),
+                body: const Center(child: Text("404 - Page Not Found")),
+              ),
+            );
+        }
       },
     );
   }

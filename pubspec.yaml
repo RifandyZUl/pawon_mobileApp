@@ -11,10 +11,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  shared_preferences: ^2.0.6
-  cupertino_icons: ^1.0.8
-  provider: ^6.0.5
-  flutter_pw_validator: ^1.0.3
+
+  http: any               # Untuk request HTTP ke API backend
+  shared_preferences: ^2.0.6   # Untuk penyimpanan data lokal sederhana di perangkat
+  cupertino_icons: ^1.0.8      # Ikon bergaya Cupertino (iOS)
+  provider: ^6.0.5             # State management yang populer
+  flutter_pw_validator: ^1.0.3 # Validasi password dengan widget interaktif
 
 
 dev_dependencies:
